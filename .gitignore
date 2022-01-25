@@ -1,0 +1,10 @@
+.idea
+*.in
+_Deparsed_XSubs.pm
+*.log
+*.status
+Makefile
+*.tar.gz
+cover_db
+MYMETA.*
+*.iml

@@ -1,0 +1,12 @@
+CHANGES
+cpanfile
+lib/Mojolicious/Command/coverage.pm
+LICENSE
+Makefile.PL
+MANIFEST			This list of files
+MANIFEST.SKIP
+MANIFEST.skip
+Mojolicious-Command-coverage-0.0.1/META.json
+Mojolicious-Command-coverage-0.0.1/META.yml
+README.md
+VERSION
