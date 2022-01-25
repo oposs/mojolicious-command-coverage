@@ -16,6 +16,7 @@ has usage => sub($self) {$self->extract_usage};
 sub run($self, @args) {
     my $deanonConfig = "";
     my $coverageConfig = "";
+    my $appName = ref $self->app;
     my $n_args = 0;
     my @orig_args = @args;
 
@@ -31,16 +32,16 @@ sub run($self, @args) {
 
     if ($deanonConfig eq "" && $self->app->can('deanonymizeConfig')) {
         $deanonConfig = $self->app->deanonymizeConfig;
-        print "Command::coverage: Found `has` deanonymize config \n";
+        print "Command::coverage: Taking config from `$appName->deanonymizeConfig` for Devel::Deanonymize \n";
     }
 
     if ($coverageConfig eq "" && $self->app->can('coverageConfig')) {
         $coverageConfig = $self->app->coverageConfig;
-        print "Command::coverage: Found `has` coverage config \n";
+        print "Command::coverage: Taking config from `$appName->coverageConfig` for Devel::Cover \n";
     }
 
     # if there is no custom config, we fallback to default
-    $deanonConfig = ref $self->app if $deanonConfig eq "";
+    $deanonConfig = $appName if $deanonConfig eq "";
     $coverageConfig = "-ignore,t/,-coverage,statement,branch,condition,path,subroutine" if $coverageConfig eq "";
 
     my @commandline_inject = ();
