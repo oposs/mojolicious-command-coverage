@@ -19,40 +19,43 @@ sub run($self, @args) {
     my $n_args = 0;
     my @orig_args = @args;
 
-    getopt \@args,['pass_through'],
+    getopt \@args, [ 'pass_through' ],
         'd|deanon-args=s' => sub {
-            $n_args+=2;
+            $n_args += 2;
             $deanonConfig = $_[1]
         },
         'c|cover-args=s'  => sub {
-            $n_args+=2;
+            $n_args += 2;
             $coverageConfig = $_[1]
         };
 
     if ($deanonConfig eq "" && $self->app->can('deanonymizeConfig')) {
         $deanonConfig = $self->app->deanonymizeConfig;
-        print "Command::coverage: Has deanonymize config \n";
+        print "Command::coverage: Found `has` deanonymize config \n";
     }
 
     if ($coverageConfig eq "" && $self->app->can('coverageConfig')) {
         $coverageConfig = $self->app->coverageConfig;
-        print "Command::coverage: Has coverage config \n";
+        print "Command::coverage: Found `has` coverage config \n";
     }
 
     # if there is no custom config, we fallback to default
     $deanonConfig = ref $self->app if $deanonConfig eq "";
     $coverageConfig = "-ignore,t/,-coverage,statement,branch,condition,path,subroutine" if $coverageConfig eq "";
 
-    my $command_line = "";
-    my $forwarded_args = join " ", @orig_args[$n_args..$#orig_args];
-    if ($coverageConfig ne "0"){
-        $command_line = "perl -MDevel::Cover=$coverageConfig -MDevel::Deanonymize=$deanonConfig $0 daemon $forwarded_args";
-    } else {
-        $command_line = "perl -MDevel::Cover=$coverageConfig $0 daemon $forwarded_args";
+    my @commandline_inject = ();
+    if ($deanonConfig ne "0") {
+        @commandline_inject = ('perl', "-MDevel::Cover=$coverageConfig", "-MDevel::Deanonymize=$deanonConfig", $0);
     }
+    else {
+        @commandline_inject = ('perl', "-MDevel::Cover=$coverageConfig", $0);
+    }
+    # Merge with application arguments
+    my @full_commandline = (@commandline_inject, @orig_args[$n_args .. $#orig_args]);
+    my $full_commandline_str = join " ", @full_commandline;
+    print "Command::coverage: Starting application with: `$full_commandline_str` \n";
 
-    print "Command::coverage: Starting application with: `$command_line`";
-    exec $command_line;
+    exec @full_commandline;
 }
 
 =head1 NAME
@@ -97,9 +100,28 @@ Runtime configuration for both modules are either passed through the command-lin
         return "<Include-pattern>"
     };
 
-If both are present, command-line args are preferred. Note: Other launch modes than C<daemon> are currently not supported
+If both are present, command-line args are preferred. If none of them are present, we fall-back to these default values:
 
-=cut
+=over 1
+
+=item Devel::Cover
+
+C<-ignore,t/,-coverage,statement,branch,condition,path,subroutine>
+
+=item Devel::Deanonymize
+
+C<ref $self->app> ( -> Resolves to your application name)
+
+=back
+
+=head1 EXAMPLES
+
+    # (with `has` sections or default config)
+    ./myapp.pl coverage daemon --listen "http://*:8888"
+
+    # (with args)
+    ./myapp.pl coverage -d MyPattern* daemon --listen "http://*:8888"
+
 
 =head1 AUTHORS
 
