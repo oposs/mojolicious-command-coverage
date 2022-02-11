@@ -8,3 +8,5 @@ Makefile
 cover_db
 MYMETA.*
 *.iml
+blib
+pm_to_blib

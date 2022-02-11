@@ -4,7 +4,7 @@ use warnings FATAL => 'all';
 use Mojo::Base 'Mojolicious::Command', -signatures;
 use Mojo::Util qw(getopt);
 
-our $VERSION = "0.0.0"; # Do not update manually
+our $VERSION = "0.0.2"; # Do not update manually
 
 # Short description
 has description => 'Start you Mojo app in coverage mode';

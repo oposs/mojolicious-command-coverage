@@ -1,4 +1,6 @@
-# mojolicious_coverage
+# Mojolicious::Command::coverage
+
+![https://metacpan.org/pod/Mojolicious::Command::coverage](https://img.shields.io/cpan/v/Mojolicious-Command-coverage)
 
 Start you Mojo app in coverage mode
 
